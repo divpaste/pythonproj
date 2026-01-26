@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<body>
+    <h1>Login Page</h1>
+    <form method="POST">
+        {% csrf_token %}
+
+        {{form.username.label}}:
+        {{form.username}}
+
+        {% for error in form.username.errors %}
+            <p class="error">{{ error }}</p>
+        {% endfor %}
+        <br><br>
+        {{form.password.label}}:
+        {{form.password}}
+
+        {% for error in form.password.errors %}
+            <p class="error">{{ error }}</p>
+        {% endfor %}
+
+        {% for error in form.non_field_errors %}
+            <p class="error">{{ error }}</p>
+        {% endfor %}
+
+        {% for message in messages %}
+            <p id="messages">{{message}}</p>
+        {% endfor %}
+
+        <br><br><input type="submit" value="Login"><br><br>
+        <a href="{% url 'register' %}">Register now</a>
+    </form>
+</body>
+</html>
