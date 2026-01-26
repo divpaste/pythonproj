@@ -123,3 +123,7 @@ STATICFILES_DIRS = [
 ]
 
 APPEND_SLASH = False
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://test-django-m69b.onrender.com',
+]
