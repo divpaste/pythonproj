@@ -4,5 +4,6 @@ from . import views
 urlpatterns = [
     path("login", views.LoginPage, name="login"),
     path("register", views.RegisterPage, name="register"),
-    path("logout", views.LogOut, name="logout")
+    path("logout", views.LogOut, name="logout"),
+    path("form", views.DonatePage, name="form")
 ]

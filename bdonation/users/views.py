@@ -3,6 +3,8 @@ from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, logout
 from django.contrib import messages
+from .forms import BloodDonationForm
+from django.contrib.auth.decorators import login_required
 
 def LoginPage(request):
     form = AuthenticationForm()
@@ -33,3 +35,15 @@ def RegisterPage(request):
             return redirect("login")
     
     return render(request, "register.html", {"form": form})
+
+@login_required(login_url = 'login')
+def DonatePage(request):
+    form = BloodDonationForm()
+
+    if request.method == 'POST':
+        form = BloodDonationForm(request.POST)
+        if form.is_valid():
+            form.save()
+
+    return render(request, "form.html", {"form": form})
+    
