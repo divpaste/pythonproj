@@ -1,67 +1,39 @@
 from django import forms
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.contrib.auth.forms import UserCreationForm
+from .models import UserProfile, Donor
 from django.core.exceptions import ValidationError
 
-class BloodDonationForm(forms.Form):
-    bgroup_choices = [
-        ("A+", "A+"), ("A-", "A-"),
-        ("B+", "B+"), ("B-", "B-"),
-        ("AB+", "AB+"), ("AB-", "AB-"),
-        ("O+", "O+"), ("O-", "O-"),
-    ]
+class RegistrationForm(UserCreationForm):
+    class Meta:
+        model = UserProfile
+        fields = ["username", "password1", "password2"]
 
-    name = forms.CharField(
-        label="Your Name",
-        max_length = 50,
-        widget = forms.TextInput(attrs={
-            "placeholder": "e.g John Doe",
-        }),
-        required = True
-    )
-    age = forms.IntegerField(
-        label = "Your Age",
-        widget = forms.NumberInput(attrs={
-            "placeholder": "e.g 25",
-        }),
-        help_text = "(18 - 70)",
-        required = True
-    )
-    bgroup = forms.ChoiceField(
-        label = "Your Blood Group",
-        choices = bgroup_choices,
-        required = True
-    )
-    height = forms.IntegerField(
-        validators=[MinValueValidator(100), MaxValueValidator(200)],
-        help_text = "in cm",
-        required = True
-    )
-    weight = forms.IntegerField(
-        help_text = "in kg between (45 - 150)",
-        required = True
-    )
-    med_history = forms.CharField(
-        label = "Any Med History",
-        widget = forms.Textarea(attrs={
-            "style": "resize: none"
-        })
-    )
-    recent_travel = forms.ChoiceField(
-        label="Any Recent Travels?",
-        widget = forms.RadioSelect,
-        choices=[('Yes', 'Yes'), ('No', 'No')]
-    )
-    previous_donor = forms.ChoiceField(
-        label="Have you previously Donated?",
-        widget = forms.RadioSelect,
-        choices=[('Yes', 'Yes'), ('No', 'No')]
-    )
-    latitude = forms.DecimalField(
-        widget=forms.HiddenInput()
-    )
-    longitude = forms.DecimalField(
-        widget=forms.HiddenInput()
-    )
+class BloodDonationForm(forms.ModelForm):
+    class Meta:
+        model = Donor 
+
+        fields = (
+        "name","age","bgroup","height","weight","med_history","previous_donor","contact","longitude","latitude"
+        )
+        widgets = {
+            "name": forms.TextInput(attrs={"placeholder": "e.g John Doe",}),
+            "age": forms.NumberInput(attrs={"placeholder": "e.g 25",}),
+            "bgroup": forms.Select(),
+            "height": forms.NumberInput(attrs={"placeholder": "cm"}),
+            "weight": forms.NumberInput(attrs={"placeholder": "kg"}),
+            "med_history": forms.Textarea(attrs={"style": "resize: none"}),
+            "contact": forms.TextInput(attrs={"placeholder": "+91 98502 xxxxx"}),
+            "previous_donor": forms.RadioSelect(choices=[(True, "Yes"), (False, "No")]),
+            "longitude": forms.HiddenInput(),  
+            "latitude": forms.HiddenInput()
+        }
+        help_texts = {
+            "age": "18 to 70",
+            "contact" : "10 digits",
+            "height": "in cms",
+            "weight": "in kgs",
+        }
 
     def clean_age(self):
         age = self.cleaned_data['age']

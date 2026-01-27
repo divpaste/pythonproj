@@ -1,6 +1,7 @@
 from django.shortcuts import redirect, render
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from .forms import RegistrationForm, BloodDonationForm
 from django.contrib.auth import login, logout
 from django.contrib import messages
 from .forms import BloodDonationForm
@@ -24,10 +25,10 @@ def LogOut(request):
     return redirect('login')
 
 def RegisterPage(request):
-    form = UserCreationForm()
+    form = RegistrationForm()
 
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = RegistrationForm(request.POST)
         if form.is_valid():
             form.save()
             user = form.cleaned_data.get('username')
@@ -43,7 +44,17 @@ def DonatePage(request):
     if request.method == 'POST':
         form = BloodDonationForm(request.POST)
         if form.is_valid():
-            form.save()
+            print("Cleaned data:", form.cleaned_data)
+            donor = form.save(commit=False)
+            donor.user = request.user
+            donor.save()
+            print("WORKS")
+            messages.success(request, "Donation info saved! 🎉")
+            # return redirect('homepage')  
+        else:
+            print("Error: ")
+            messages.error(request, "Donation not saved! 🎉")
+            print(form.errors)
 
     return render(request, "form.html", {"form": form})
     

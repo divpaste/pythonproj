@@ -127,3 +127,5 @@ APPEND_SLASH = False
 CSRF_TRUSTED_ORIGINS = [
     'https://test-django-m69b.onrender.com',
 ]
+
+AUTH_USER_MODEL = "users.UserProfile"

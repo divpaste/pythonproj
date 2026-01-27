@@ -1,14 +1,12 @@
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth.models import AbstractUser, User
 
-# User Model
-class UserProfile(models.Model):
-    user  = models.OneToOneField(User, on_delete=models.CASCADE)
+class UserProfile(AbstractUser):
+    role_choices = [("R" , "R"), ("D", "D")]
+    role = models.CharField(max_length=1, choices=role_choices)
 
-    role_choices = (
-    ('D', 'Donor'),
-    ('R', 'Receiver')
-    )
+class Donor(models.Model):
+    user  = models.OneToOneField(UserProfile, on_delete=models.CASCADE)    
 
     bgroup_choices = [
         ("A+", "A+"), ("A-", "A-"),
@@ -18,14 +16,12 @@ class UserProfile(models.Model):
     ]
 
     name = models.CharField(max_length=50)
-    age = models.IntegerField()
+    age = models.PositiveIntegerField()
     bgroup = models.CharField(max_length=3, choices=bgroup_choices)
-    height = models.IntegerField()
-    weight = models.IntegerField()
-    med_history = models.TextField()
-    recent_travel = models.IntegerField()
-    previous_donor = models.IntegerField()
-    role = models.CharField(max_length=1, choices=role_choices)
-    contact = models.CharField(max_length=10, unique=True)
-    longitude = models.DecimalField(max_digits=9, decimal_places=6)
-    latitude = models.DecimalField(max_digits=9, decimal_places=6)
+    height = models.PositiveIntegerField()
+    weight = models.PositiveIntegerField()
+    med_history = models.TextField(blank=True)
+    previous_donor = models.BooleanField()
+    contact = models.CharField(max_length=10)
+    longitude = models.DecimalField(max_digits=10, decimal_places=6)
+    latitude = models.DecimalField(max_digits=10, decimal_places=6)

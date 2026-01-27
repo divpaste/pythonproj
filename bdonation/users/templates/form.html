@@ -7,8 +7,9 @@
 </head>
 
 <body>
-    {% csrf_token %}
     <form method="POST">
+        {% csrf_token %}
+
         {{form.name.label}}:<br>
         {{form.name}}<br><br>
 
@@ -27,11 +28,14 @@
         {{form.med_history.label}}:<br>
         {{form.med_history}}<br><br>
 
-        {{form.recent_travel.label}}<br>
-        {{form.recent_travel}}<br><br>
+        {{form.contact.label}}<br>
+        {{form.contact}}<br><br>
 
         {{form.previous_donor.label}}<br>
         {{form.previous_donor}}<br><br>
+
+        {{ form.longitude }}
+        {{ form.latitude }}
 
         <!-- <button type="button" onClick="getLoc()">Provide Location</button> -->
         <div id="map-container" style="position:relative">
@@ -41,7 +45,7 @@
             </div>
         </div>
 
-        <a href="{% url 'homepage' %}">Submit</a>
+        <button type="submit">Submit</button>
     </form>
 </body>
 
@@ -71,7 +75,10 @@
 
     map.on("contextmenu", (e) => {
         if (!marked) {
-            lat = e.latlng.lat, lng = e.latlng.lng
+            const lat = e.latlng.lat.toFixed(6);
+            const lng = e.latlng.lng.toFixed(6);
+            document.getElementById("id_longitude").value = lng;
+            document.getElementById("id_latitude").value = lat;
             marker = L.marker([lat, lng]).addTo(map)
                 .bindPopup(`Latitude: ${lat.toFixed(4)}, Longitude: ${lng.toFixed(4)}`)
                 .openPopup()
