@@ -6,6 +6,7 @@ from django.contrib.auth import login, logout
 from django.contrib import messages
 from .forms import BloodDonationForm
 from django.contrib.auth.decorators import login_required
+from django.conf import settings 
 
 def LoginPage(request):
     form = AuthenticationForm()
@@ -56,5 +57,5 @@ def DonatePage(request):
             messages.error(request, "Donation not saved! 🎉")
             print(form.errors)
 
-    return render(request, "form.html", {"form": form})
+    return render(request, "form.html", {"form": form, "API_KEY": settings.MAP_API_KEY})
     

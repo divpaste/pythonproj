@@ -4,6 +4,10 @@
 <head>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-boundary-canvas/leaflet-boundary-canvas.js"></script>
+    <script src="https://cdn.maptiler.com/maptiler-geocoding-control/v2.1.7/leaflet.umd.js"></script>
+    <link href="https://cdn.maptiler.com/maptiler-geocoding-control/v2.1.7/style.css" rel="stylesheet">
 </head>
 
 <body>
@@ -38,8 +42,8 @@
         {{ form.latitude }}
 
         <!-- <button type="button" onClick="getLoc()">Provide Location</button> -->
-        <div id="map-container" style="position:relative">
-            <div id="map" style="height: 500px; width: 500px"></div>
+        <div id="map-container" style="position:relative; height: 500px; width: 500px">
+            <div id="map" style="height: 100%; width: 100%"></div>
             <div style="position:absolute; top:0px;z-index: 999">
                 <button type="button" onclick="removeMarker()">Remove Marker</button>
             </div>
@@ -47,51 +51,60 @@
 
         <button type="submit">Submit</button>
     </form>
-</body>
+    <script>
+        const API_KEY = "{{ API_KEY }}"
+        // const bounds = 0, bbox = 0
+        const map = L.map('map', { minZoom: 11, maxZoom: 18, maxBoundsViscosity: 1.0 }).setView([18.95, 73.25], 11);
 
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="https://unpkg.com/leaflet-boundary-canvas/leaflet-boundary-canvas.js"></script>
-<script>
-    const map = L.map('map', { minZoom: 11, maxZoom: 18, maxBoundsViscosity: 1.0 }).setView([18.95, 73.25], 11);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap contributors'
-    }).addTo(map);
+        let geocoder = L.control.maptilerGeocoding({
+            apiKey: API_KEY,
+            country: "IN",
+            language: "en",
+            types: ["poi", "address"],
+            bbox: [72.702044, 18.916219, 73.320066, 19.328002],
+            marker: false
+        }).addTo(map)
 
-    let marked = false
-    let marker = null
-    fetch("{% static 'area.geojson' %}")
-        .then(res => res.json())
-        .then(geoJSON => {
+        let marked = false
+        let marker = null
+        fetch("{% static 'area.geojson' %}")
+            .then(res => res.json())
+            .then(geoJSON => {
 
-            const layer = L.geoJSON(geoJSON, {
-                style: { color: 'red', weight: 0.8, fillOpacity: 0 }
-            }).addTo(map);
+                const layer = L.geoJSON(geoJSON, {
+                    style: { color: 'red', weight: 0.8, fillOpacity: 0 }
+                }).addTo(map);
 
-            map.setMaxBounds(layer.getBounds());
-            map.panInsideBounds(layer.getBounds());
+                map.setMaxBounds(layer.getBounds());
+                map.panInsideBounds(layer.getBounds());
+            })
+            .catch(err => console.error(err));
+
+        map.on("contextmenu", (e) => {
+            if (!marked) {
+                const lat = e.latlng.lat.toFixed(6);
+                const lng = e.latlng.lng.toFixed(6);
+                document.getElementById("id_longitude").value = lng;
+                document.getElementById("id_latitude").value = lat;
+                marker = L.marker([lat, lng]).addTo(map)
+                    .bindPopup(`Latitude: ${lat}, Longitude: ${lng}`)
+                    .openPopup()
+                marked = true
+            }
         })
-        .catch(err => console.error(err));
 
-    map.on("contextmenu", (e) => {
-        if (!marked) {
-            const lat = e.latlng.lat.toFixed(6);
-            const lng = e.latlng.lng.toFixed(6);
-            document.getElementById("id_longitude").value = lng;
-            document.getElementById("id_latitude").value = lat;
-            marker = L.marker([lat, lng]).addTo(map)
-                .bindPopup(`Latitude: ${lat.toFixed(4)}, Longitude: ${lng.toFixed(4)}`)
-                .openPopup()
-            marked = true
+        function removeMarker() {
+            if (marked) {
+                map.removeLayer(marker)
+                // marker = null
+                marked = false
+            }
         }
-    })
-
-    function removeMarker(){
-        if (marked) {
-            map.removeLayer(marker)
-            marked = false
-        }
-    }
-</script>
+    </script>
+</body>
 
 </html>
