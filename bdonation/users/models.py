@@ -15,6 +15,12 @@ class Donor(models.Model):
         ("O+", "O+"), ("O-", "O-"),
     ]
 
+    status_choices = [
+        ("P", "Pending"),
+        ("A", "Accepted"),
+        ("R", "Rejected")
+    ]
+
     name = models.CharField(max_length=50)
     age = models.PositiveIntegerField()
     bgroup = models.CharField(max_length=3, choices=bgroup_choices)
@@ -25,3 +31,4 @@ class Donor(models.Model):
     contact = models.CharField(max_length=10)
     longitude = models.DecimalField(max_digits=10, decimal_places=6)
     latitude = models.DecimalField(max_digits=10, decimal_places=6)
+    status = models.CharField(max_length=1, choices=status_choices, default="P")
