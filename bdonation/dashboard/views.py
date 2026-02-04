@@ -79,15 +79,21 @@ def send_request(request):
 
     return redirect("homepage")
 
-@login_required(login_url = 'login')
-def delete_request(request, donor_id):
+@login_required(login_url='login')
+def accept_request(request, request_id):
+    donation_request = get_object_or_404(DonationRequest, id=request_id, donor=request.user)
 
-    donation = get_object_or_404(
-        DonationRequest,
-        donor_id=donor_id,
-        receiver=request.user
-    )
+    donation_request.status = 'Accepted'
+    donation_request.save()
 
-    donation.delete()
-    return redirect("homepage")
+    return redirect('inbox')
+
+@login_required(login_url='login')
+def reject_request(request, request_id):
+    donation_request = get_object_or_404(DonationRequest, id=request_id, donor=request.user)
+
+    donation_request.status = 'Rejected'
+    donation_request.save()
+
+    return redirect('inbox')
         

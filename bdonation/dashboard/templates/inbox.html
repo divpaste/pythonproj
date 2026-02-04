@@ -1,10 +1,35 @@
 <!DOCTYPE html>
 
 <body>
-    Inbox
-    {% for request in requests %}
-        {{request.donor}}
-    {% endfor %}
+    {% if requests %}
+    <ul>
+        {% for req in requests %}
+        <li>
+            <strong>{{ req.receiver.full_name }}</strong>
+            ({{ req.receiver.bgroup }})
+            - Status: {{ req.status }}
+
+            {% if req.status == "Pending" %}
+            <!-- Accept button -->
+            <a href="{% url 'accept_request' req.id %}">
+                <button style="color: white; background-color: green;">Accept</button>
+            </a>
+
+            <!-- Reject button -->
+            <a href="{% url 'reject_request' req.id %}">
+                <button style="color: white; background-color: red;">Reject</button>
+            </a>
+            {% else %}
+            <!-- Already responded -->
+            <span style="color: gray;">(Response sent)</span>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No requests received yet 🕊️</p>
+    {% endif %}
+
 </body>
 <script>
 </script>
