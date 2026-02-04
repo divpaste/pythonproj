@@ -131,7 +131,8 @@ CSRF_TRUSTED_ORIGINS = [
     'https://test-django-m69b.onrender.com',
 ]
 
-AUTH_USER_MODEL = "users.UserProfile"
+AUTH_USER_MODEL = "users.User"
+LOGIN_URL = "login"
 
 load_dotenv()
 MAP_API_KEY = os.getenv("API_KEY")

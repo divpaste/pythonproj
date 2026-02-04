@@ -1,11 +1,9 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
-from .models import UserProfile, Donor
+from .models import User, DonationRequest
 
-@admin.register(Donor)
-class DonorAdmin(admin.ModelAdmin):
-    pass
-
-@admin.register(UserProfile)
+@admin.register(User)
 class CustomUserAdmin(UserAdmin):
-    pass
+    list_display = ('username','bgroup')
+
+admin.site.register(DonationRequest)

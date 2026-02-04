@@ -16,6 +16,7 @@
             <h2>BloodConnect</h2>
         </div>
         <div id="userlogout">
+            <a href="{% url 'inbox' %}">Inbox</a>
             {% if request.user.is_authenticated %}
             <p>Hello, {{request.user}}</p>
             <a id="logoutbtn" type="button" href="{% url 'logout' %}">LOGOUT</a>
@@ -25,6 +26,9 @@
             {% endif %}
         </div>
     </div>
+    {{request.user}}
+    {{requests}}
+    <a href="{% url 'send_request' %}">Send Requests</a>
     <div id="center">
         <div id="map-container">
             <div id="map"></div>
@@ -32,29 +36,30 @@
     </div>
     <div id="cfooter">
         <div>
-            <p id="quote">"The blood you donate gives someone another chance at life. One day that someone may be a close relative,
+            <p id="quote">"The blood you donate gives someone another chance at life. One day that someone may be a
+                close relative,
                 a friend, a loved one—or even you."</p>
         </div>
         <div id="donateinfo">
             <p id="label">Want to donate Blood?</p>
             {% if has_filled %}
-                <a class="donatebtn disabled-btn" type="button">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                        class="bi bi-suit-heart-fill" viewBox="0 0 16 16">
-                        <path
-                            d="M4 1c2.21 0 4 1.755 4 3.92C8 2.755 9.79 1 12 1s4 1.755 4 3.92c0 3.263-3.234 4.414-7.608 9.608a.513.513 0 0 1-.784 0C3.234 9.334 0 8.183 0 4.92 0 2.755 1.79 1 4 1" />
-                    </svg>
-                    Donate Now
-                </a>
+            <a class="donatebtn disabled-btn" type="button">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-suit-heart-fill" viewBox="0 0 16 16">
+                    <path
+                        d="M4 1c2.21 0 4 1.755 4 3.92C8 2.755 9.79 1 12 1s4 1.755 4 3.92c0 3.263-3.234 4.414-7.608 9.608a.513.513 0 0 1-.784 0C3.234 9.334 0 8.183 0 4.92 0 2.755 1.79 1 4 1" />
+                </svg>
+                Donate Now
+            </a>
             {% else %}
-                <a class="donatebtn" type="button" href="{% url 'form' %}">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                        class="bi bi-suit-heart-fill" viewBox="0 0 16 16">
-                        <path
-                            d="M4 1c2.21 0 4 1.755 4 3.92C8 2.755 9.79 1 12 1s4 1.755 4 3.92c0 3.263-3.234 4.414-7.608 9.608a.513.513 0 0 1-.784 0C3.234 9.334 0 8.183 0 4.92 0 2.755 1.79 1 4 1" />
-                    </svg>
-                    Donate Now
-                </a>
+            <a class="donatebtn" type="button" href="{% url 'form' %}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    class="bi bi-suit-heart-fill" viewBox="0 0 16 16">
+                    <path
+                        d="M4 1c2.21 0 4 1.755 4 3.92C8 2.755 9.79 1 12 1s4 1.755 4 3.92c0 3.263-3.234 4.414-7.608 9.608a.513.513 0 0 1-.784 0C3.234 9.334 0 8.183 0 4.92 0 2.755 1.79 1 4 1" />
+                </svg>
+                Donate Now
+            </a>
             {% endif %}
         </div>
     </div>
@@ -87,7 +92,9 @@
 
     donors.forEach(donor => {
         marker = L.marker([donor.latitude, donor.longitude])
-            .bindPopup(`${donor.name} - ${donor.bgroup}`)
+            .bindPopup(`
+            ${donor.full_name} - ${donor.bgroup}
+            `)
             .addTo(map)
     })
 </script>

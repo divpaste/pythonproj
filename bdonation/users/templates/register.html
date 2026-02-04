@@ -1,9 +1,11 @@
 {% load static %}
 <!DOCTYPE html>
+
 <head>
+
     <head>
-    <link rel="stylesheet" href="{% static 'style.css' %}">
-</head>
+        <link rel="stylesheet" href="{% static 'style.css' %}">
+    </head>
 </head>
 <html>
 
@@ -16,7 +18,7 @@
         {{form.username}}
 
         {% for error in form.username.errors %}
-            <p class="error">{{ error }}</p>
+        <p class="error">{{ error }}</p>
         {% endfor %}
 
         <br><br>
@@ -24,23 +26,27 @@
         {{form.password1}}
 
         {% for error in form.password1.errors %}
-            <p class="error">{{ error }}</p>
+        <p class="error">{{ error }}</p>
         {% endfor %}
-        
+
         <br><br>
         {{form.password2.label}}:
         {{form.password2}}
 
+        <br><br>
+        {{ form.bgroup.label }}:
+        {{ form.bgroup }}
+
         {% for error in form.password2.errors %}
-            <p class="error">{{ error }}</p>
+        <p class="error">{{ error }}</p>
         {% endfor %}
 
         {% for error in form.non_field_errors %}
-            <p class="error">{{ error }}</p>
+        <p class="error">{{ error }}</p>
         {% endfor %}
 
         {% for message in messages %}
-            <p id="messages">{{message}}</p>
+        <p id="messages">{{message}}</p>
         {% endfor %}
 
         <br><br><input type="submit" value="Register"><br><br>

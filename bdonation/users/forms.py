@@ -1,23 +1,36 @@
 from django import forms
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.forms import UserCreationForm
-from .models import UserProfile, Donor
+from .models import User
 from django.core.exceptions import ValidationError
 
 class RegistrationForm(UserCreationForm):
+    bgroup = forms.ChoiceField(
+        choices=User.bgroup_choices,
+        required=True,
+        label="Blood Group"
+    )
+
     class Meta:
-        model = UserProfile
-        fields = ["username", "password1", "password2"]
+        model = User
+        fields = ["username", "password1", "password2", "bgroup"]
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.bgroup = self.cleaned_data["bgroup"]
+        if commit:
+            user.save()
+        return user
 
 class BloodDonationForm(forms.ModelForm):
     class Meta:
-        model = Donor 
+        model = User 
 
         fields = (
-        "name","age","bgroup","height","weight","med_history","previous_donor","contact","longitude","latitude"
+        "full_name","age","bgroup","height","weight","med_history","previous_donor","contact","longitude","latitude"
         )
         widgets = {
-            "name": forms.TextInput(attrs={"placeholder": "e.g John Doe",}),
+            "full_name": forms.TextInput(attrs={"placeholder": "e.g John Doe",}),
             "age": forms.NumberInput(attrs={"placeholder": "e.g 25",}),
             "bgroup": forms.Select(),
             "height": forms.NumberInput(attrs={"placeholder": "cm"}),

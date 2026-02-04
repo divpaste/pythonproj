@@ -43,19 +43,16 @@ def DonatePage(request):
     form = BloodDonationForm()
 
     if request.method == 'POST':
-        form = BloodDonationForm(request.POST)
+        form = BloodDonationForm(request.POST, instance=request.user)
         if form.is_valid():
-            print("Cleaned data:", form.cleaned_data)
             donor = form.save(commit=False)
-            donor.user = request.user
+            donor.role = "D"
             donor.save()
-            print("WORKS")
             messages.success(request, "Donation info saved! 🎉")
-            # return redirect('homepage')  
+            return redirect('homepage')  
         else:
             print("Error: ")
             messages.error(request, "Donation not saved! 🎉")
             print(form.errors)
 
     return render(request, "form.html", {"form": form, "API_KEY": settings.MAP_API_KEY})
-    
