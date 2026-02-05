@@ -1,20 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@400;700&display=swap');
 
 * {
+    margin: 0;
+    padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: "Roboto Slab", serif;
+    user-select: none;
 }
 
 body {
-    margin: 0;
-    padding: 30px;
     background-color: #f8f9fa;
-    background-image:
-        linear-gradient(rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0.75)),
-        url('https://img.freepik.com/free-vector/medical-blood-donation-testing-vector-illustration_1308-182435.jpg');
-    background-size: cover;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+    padding: 30px;
+    color: #333;
+}
+
+form {
+    width: 60vw;
+    max-width: 650px;
+    margin: auto;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(6px);
+    padding: 32px;
+    border-radius: 18px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
+    border-top: 6px solid #B22222;
 }
 
 .form-title {
@@ -22,22 +31,9 @@ body {
     font-size: 28px;
     font-weight: 700;
     color: #B22222;
-    margin-bottom: 18px;
+    margin-bottom: 20px;
     letter-spacing: 0.5px;
 }
-
-
-form {
-    width: 60vw;
-    margin: auto;
-    background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(6px);
-    padding: 30px 32px;
-    border-radius: 18px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
-    border-top: 6px solid #B22222;
-}
-
 
 label {
     font-weight: 600;
@@ -53,17 +49,17 @@ input[type="tel"],
 select,
 textarea {
     width: 100%;
-    padding: 10px 12px;
+    padding: 12px 14px;
     margin-top: 4px;
-    margin-bottom: 14px;
+    margin-bottom: 16px;
     border: 1px solid #ddd;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 14px;
 }
 
 textarea {
     resize: vertical;
-    min-height: 90px;
+    min-height: 100px;
 }
 
 input:focus,
@@ -74,6 +70,34 @@ textarea:focus {
     box-shadow: 0 0 0 2px rgba(178, 34, 34, 0.15);
 }
 
+button[type="submit"] {
+    width: 100%;
+    margin-top: 20px;
+    background-color: #B22222;
+    color: white;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.1s;
+}
+
+button[type="submit"]:hover {
+    background-color: #8B0000;
+}
+
+button[type="submit"]:active {
+    transform: scale(0.98);
+}
+
+.error {
+    color: #B22222;
+    font-size: 0.85rem;
+    margin-top: -6px;
+    margin-bottom: 10px;
+}
 
 #map-container {
     width: 100%;
@@ -83,7 +107,7 @@ textarea:focus {
     overflow: hidden;
     border: 1px solid #ddd;
     background: #fff;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
     position: relative;
 }
 
@@ -150,7 +174,7 @@ textarea:focus {
 }
 
 
-#map-container > div > button {
+#map-container>div>button {
     display: none;
     position: absolute !important;
     top: 75px !important;
@@ -167,53 +191,6 @@ textarea:focus {
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
-#map-container > div > button:hover {
+#map-container>div>button:hover {
     background-color: #8B0000;
-}
-
-
-button[type="submit"] {
-    width: 100%;
-    margin-top: 20px;
-    background-color: #B22222;
-    color: white;
-    padding: 14px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 16px;
-    transition: background 0.3s, transform 0.1s;
-}
-
-button[type="submit"]:hover {
-    background-color: #8B0000;
-}
-
-button[type="submit"]:active {
-    transform: scale(0.98);
-}
-
-
-.error {
-    color: #B22222;
-    font-size: 0.85rem;
-    margin-top: -8px;
-    margin-bottom: 10px;
-}
-
-
-@media (max-width: 768px) {
-    body {
-        padding: 15px;
-    }
-
-    form {
-        max-width: 100%;
-        padding: 20px;
-    }
-
-    #map-container {
-        height: 320px;
-    }
 }

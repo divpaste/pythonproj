@@ -1,37 +1,86 @@
+{% load static %}
 <!DOCTYPE html>
+<html>
+
+<head>
+    <title>Donor Inbox</title>
+    <link rel="stylesheet" href="{% static 'inbox.css' %}">
+</head>
 
 <body>
-    {% if requests %}
-    <ul>
-        {% for req in requests %}
-        <li>
-            <strong>{{ req.receiver.full_name }}</strong>
-            ({{ req.receiver.bgroup }})
-            - Status: {{ req.status }}
 
-            {% if req.status == "Pending" %}
-            <!-- Accept button -->
-            <a href="{% url 'accept_request' req.id %}">
-                <button style="color: white; background-color: green;">Accept</button>
-            </a>
+    <div class="container">
 
-            <!-- Reject button -->
-            <a href="{% url 'reject_request' req.id %}">
-                <button style="color: white; background-color: red;">Reject</button>
-            </a>
-            {% else %}
-            <!-- Already responded -->
-            <span style="color: gray;">(Response sent)</span>
-            {% endif %}
-        </li>
-        {% endfor %}
-    </ul>
-    {% else %}
-    <p>No requests received yet 🕊️</p>
-    {% endif %}
+        <header class="page-header">
+            <h1>Donor Inbox</h1>
+            <a href="{% url 'homepage' %}" class="back-btn">HOME</a>
+        </header>
+
+        <nav class="tabs">
+            <a href="?tab=all" class="tab {% if active_tab == 'all' %}active{% endif %}">All</a>
+            <a href="?tab=pending" class="tab {% if active_tab == 'pending' %}active{% endif %}">Pending</a>
+            <a href="?tab=accepted" class="tab {% if active_tab == 'accepted' %}active{% endif %}">Accepted</a>
+            <a href="?tab=rejected" class="tab {% if active_tab == 'rejected' %}active{% endif %}">Rejected</a>
+        </nav>
+
+        {% if requests %}
+        <div class="request-list">
+
+            {% for req in requests %}
+            <div class="request-card">
+
+                <div class="request-header">
+                    <div>
+                        <h3 class="receiver-name">User: {{ req.receiver }}</h3>
+                        <span class="blood-group">Blood Group: {{ req.receiver.bgroup }}</span>
+                    </div>
+
+                    <span class="status status-{{ req.status|lower }}">
+                        {{ req.status|capfirst }}
+                    </span>
+                </div>
+
+                <div class="request-body">
+                    <p><strong>Requested On:</strong> {{ req.created_at }}</p>
+
+                    <p>
+                        <strong>Contact:</strong>
+                        {% if req.status == "Accepted" %}
+                        <span class="contact-visible">{{ req.contact }}</span>
+                        {% else %}
+                        <span class="contact-hidden">🔒 Hidden</span>
+                        {% endif %}
+                    </p>
+                </div>
+
+                <div class="request-actions">
+                    {% if req.status == "Pending" %}
+
+                    <a href="{% url 'accept_request' req.id %}">
+                        <button class="btn accept-btn">Accept</button>
+                    </a>
+
+                    <a href="{% url 'reject_request' req.id %}">
+                        <button class="btn reject-btn">Reject</button>
+                    </a>
+
+                    {% else %}
+                    <span class="response-text">Response submitted</span>
+                    {% endif %}
+                </div>
+
+            </div>
+            {% endfor %}
+
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>No requests received yet 🕊️</p>
+        </div>
+        {% endif %}
+
+    </div>
 
 </body>
-<script>
-</script>
 
 </html>

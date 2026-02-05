@@ -1,0 +1,59 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Receiver Inbox</title>
+    <link rel="stylesheet" href="{% static 'inbox.css' %}">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <header class="page-header">
+            <h1>Receiver Inbox</h1>
+            <a href="{% url 'homepage' %}" class="back-btn">HOME</a>
+        </header>
+
+        {% if requests %}
+        <div class="request-list">
+
+            {% for req in requests %}
+            <div class="request-card">
+
+                <div class="request-header">
+                    <div>
+                        <h3 class="donor-name">Donor: {{ req.donor }}</h3>
+                        <span class="blood-group">Blood Group: {{ req.donor.bgroup }}</span>
+                    </div>
+
+                    <span class="status status-accepted">
+                        {{ req.status|capfirst }}
+                    </span>
+                </div>
+
+                <div class="request-body">
+                    <p><strong>Requested On:</strong> {{ req.created_at }}</p>
+
+                    <p>
+                        <strong>Contact:</strong>
+                        <span class="contact-visible">{{ req.contact }}</span>
+                    </p>
+                </div>
+
+            </div>
+            {% endfor %}
+
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>No accepted requests yet 🕊️</p>
+        </div>
+        {% endif %}
+
+    </div>
+
+</body>
+
+</html>

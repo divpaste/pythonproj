@@ -33,16 +33,31 @@ def HomePage(request):
 
     return render(request, "homepage.html", {"donors_json": donors_json, "donors": donors, "has_filled": has_filled, "requests" : requests, "form": form})
 
-@login_required(login_url = 'login')
+@login_required(login_url='login')
 def InboxPage(request):
     user = request.user
 
-    if user.role != "D":
-        return redirect("homepage")
-    
+    tab = request.GET.get("tab", "all")
+
     requests = DonationRequest.objects.filter(donor=user)
 
-    return render(request, "inbox.html", {"requests" : requests})
+    if tab == "pending":
+        requests = requests.filter(status="Pending")
+
+    elif tab == "accepted":
+        requests = requests.filter(status="Accepted")
+
+    elif tab == "rejected":
+        requests = requests.filter(status="Rejected")
+
+    requests = requests.order_by("-created_at")
+
+    context = {
+        "requests": requests,
+        "active_tab": tab
+    }
+
+    return render(request, "inbox.html", context)
 
 @login_required(login_url = 'login')
 def send_request(request):
@@ -139,3 +154,17 @@ def send_manual_request(request):
         )
 
     return JsonResponse({"message": "Requests sent successfully"})
+
+@login_required(login_url='login')
+def ReceiverInboxPage(request):
+    user = request.user
+
+    requests = DonationRequest.objects.filter(receiver=user)
+
+    context = {
+        "requests": requests
+    }
+
+    return render(request, "receiver_inbox.html", context)
+
+

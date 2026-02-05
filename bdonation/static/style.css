@@ -1,64 +1,91 @@
-/* static/css/style.css */
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background-color: #f8f9fa;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@100..900&display=swap');
+
+* {
     margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Roboto Slab", serif;
+}
 
-    background-image: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)), 
-                      url('https://img.freepik.com/free-vector/medical-blood-donation-testing-vector-illustration_1308-182435.jpg?semt=ais_hybrid&w=740&q=80');
-
+body {
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 20px;
+    color: #333;
 }
 
 form {
-    background: rgba(255, 255, 255, 0.9); 
-    backdrop-filter: blur(5px); 
-    padding: 2.5rem;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(6px);
+    padding: 3rem 2.5rem;
+    border-radius: 18px;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
     width: 100%;
-    max-width: 380px;
+    max-width: 400px;
     border: 1px solid rgba(255, 255, 255, 0.3);
     border-top: 6px solid #B22222;
 }
 
-h1 {
-    color: #333;
-    text-align: center;
-    margin-bottom: 1.5rem;
-    font-size: 24px;
+.form-group {
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
 }
 
+h1 {
+    color: #B22222;
+    text-align: center;
+    margin-bottom: 2rem;
+    font-size: 26px;
+    font-weight: 700;
+}
 
-input[type="text"], 
-input[type="password"] {
+label {
+    display: block;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 6px;
+}
+
+select,
+input[type="text"],
+input[type="password"],
+input[type="email"] {
     width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    margin-bottom: 15px;
+    padding: 12px;
     border: 1px solid #ddd;
     border-radius: 6px;
+    font-size: 15px;
     box-sizing: border-box;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus {
+    outline: none;
+    border-color: #B22222;
+    box-shadow: 0 0 0 3px rgba(178, 34, 34, 0.15);
 }
 
 input[type="submit"] {
     width: 100%;
     background-color: #B22222;
     color: white;
-    padding: 12px;
+    padding: 14px;
     border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: bold;
+    border-radius: 10px;
+    font-weight: 700;
     font-size: 16px;
-    transition: background 0.3s;
+    cursor: pointer;
+    transition: background 0.25s;
 }
 
 input[type="submit"]:hover {
@@ -68,56 +95,49 @@ input[type="submit"]:hover {
 .error {
     color: #B22222;
     font-size: 0.85rem;
-    margin-top: -10px;
-    margin-bottom: 10px;
+    display: block;
 }
 
 #messages {
+    display:flex;
+    justify-content: center;
     background-color: #d1ecf1;
     color: #0c5460;
     padding: 10px;
-    border-radius: 4px;
+    border-radius: 6px;
     text-align: center;
+    margin-bottom: 15px;
+    font-weight: 600;
 }
 
 a {
     display: block;
     text-align: center;
     margin-top: 15px;
-    color: #e63946;
+    color: #B22222;
+    font-weight: 600;
+    font-size: 18px;
     text-decoration: none;
-    font-size: 14px;
+    transition: 0.25s;
 }
 
 a:hover {
     text-decoration: underline;
+    color: #8B0000;
 }
 
-input[type="text"], 
-input[type="password"], 
-input[type="email"] {
-    width: 100%;
-    padding: 10px;
-    margin-top: 5px;
-    margin-bottom: 15px;
-    border: 1px solid #ddd;
-    border-radius: 6px;
-    box-sizing: border-box;
-}
-
-/* chart */
 .motivation-box {
     background: #fff;
-    padding: 30px;
+    padding: 25px 20px;
     border-radius: 15px;
     text-align: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
     border-left: 8px solid #B22222;
 }
 
 .motivation-box h1 {
-    font-size: 3rem;
+    font-size: 2.5rem;
     margin: 10px 0;
+    font-weight: 700;
 }
-

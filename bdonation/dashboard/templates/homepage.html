@@ -7,69 +7,96 @@
     <link rel="stylesheet" href="{% static 'homepage.css' %}">
 </head>
 
+{% load static %}
+<!DOCTYPE html>
+
+<head>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="{% static 'homepage.css' %}">
+</head>
+
 <body>
-    <div id="navbar">
+    <nav id="navbar">
         <div id="logoname">
-            <button id="icon" type="button"><img
-                    src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Heart_coraz%C3%B3n.svg/250px-Heart_coraz%C3%B3n.svg.png"
-                    height="30px"></button>
             <h2>BloodConnect</h2>
         </div>
+
         <div id="userlogout">
-            <a href="{% url 'inbox' %}">Inbox</a>
             {% if request.user.is_authenticated %}
-            <p>Hello, {{request.user}}</p>
-            <a id="logoutbtn" type="button" href="{% url 'logout' %}">LOGOUT</a>
+            <p>
+                Hello, {{ request.user }}
+            </p>
+            <a id="logoutbtn"
+                href="{% if user.role == 'D' %}{% url 'inbox' %}{% elif user.role == 'R' %}{% url 'receiver_inbox' %}{% endif %}"
+                class="navlink">
+                INBOX
+            </a>
+            <a id="logoutbtn" href="{% url 'logout' %}">LOGOUT</a>
             {% else %}
             <p>Hello, Guest</p>
-            <a id="logoutbtn" type="button" href="{% url 'login' %}">LOGIN</a>
+            <a id="logoutbtn" href="{% url 'login' %}">LOGIN</a>
             {% endif %}
         </div>
-    </div>
-    YOU ARE A {{ request.user.get_role_display }} with Blood Group {{ request.user.bgroup }}<br>
-    <div>
-        {% if request.user.role == "R" %}
-        <form method="POST" action="{% url 'send_request' %}">
-            {% csrf_token %}
-            {{ form.contact.label_tag }}
-            {{ form.contact }}<br>
+    </nav>
 
-            <div>
-                <button type="button" id="autoBtn">Auto Select</button>
-                <button type="button" id="manualBtn">Manual Select</button>
+    <section class="user-info">
+        {% if request.user.is_authenticated %}
+        You are a <strong>{{ request.user.get_role_display }}</strong> with Blood Group <strong>{{ request.user.bgroup }}</strong>
+        {% endif %}
+    </section>
+
+    {% if request.user.role == "R" %}
+    <section class="request-panel">
+        <form method="POST" action="{% url 'send_request' %}" class="request-form">
+            {% csrf_token %}
+            <div class="form-group">
+                {{ form.contact.label_tag }}
+                {{ form.contact }}
             </div>
 
-            <button type="submit">Send Request</button>
-            <button type="button" id="manualSendBtn">Send Manual Request</button>
+            <div class="select-buttons">
+                <button type="button" id="autoBtn" class="primary-btn">Auto Select</button>
+                <button type="button" id="manualBtn" class="secondary-btn">Manual Select</button><br>
+                <div id="notification" style="font-weight:600; color:#2e8b57;"></div>
+            </div>
+
+            <div class="submit-buttons">
+                <button type="submit" class="primary-btn">Send Request</button>
+                <button type="button" id="manualSendBtn" class="secondary-btn">Send Manual Request</button>
+            </div>
         </form>
-        {% endif %}
-    </div>
-    <div id="center">
+    </section>
+    {% endif %}
+
+    <main id="center">
         <div id="map-container">
             <div id="map"></div>
         </div>
-    </div>
-    <div id="cfooter">
+    </main>
+
+    <footer id="cfooter">
         <div>
-            <p id="quote">"The blood you donate gives someone another chance at life. One day that someone may be a
-                close relative,
-                a friend, a loved one—or even you."</p>
+            <p id="quote">
+                "The blood you donate gives someone another chance at life. One day that someone may be a
+                close relative, a friend, a loved one—or even you."
+            </p>
         </div>
+
         <div id="donateinfo">
             <p id="label">Want to donate Blood?</p>
+
             {% if has_filled %}
-            <a class="donatebtn disabled-btn" type="button">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                    class="bi bi-suit-heart-fill" viewBox="0 0 16 16">
+            <a class="donatebtn disabled-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                     <path
                         d="M4 1c2.21 0 4 1.755 4 3.92C8 2.755 9.79 1 12 1s4 1.755 4 3.92c0 3.263-3.234 4.414-7.608 9.608a.513.513 0 0 1-.784 0C3.234 9.334 0 8.183 0 4.92 0 2.755 1.79 1 4 1" />
                 </svg>
                 Donate Now
             </a>
             {% else %}
-            <a class="donatebtn" type="button" href="{% url 'form' %}">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                    class="bi bi-suit-heart-fill" viewBox="0 0 16 16">
+            <a class="donatebtn" href="{% url 'form' %}">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                     <path
                         d="M4 1c2.21 0 4 1.755 4 3.92C8 2.755 9.79 1 12 1s4 1.755 4 3.92c0 3.263-3.234 4.414-7.608 9.608a.513.513 0 0 1-.784 0C3.234 9.334 0 8.183 0 4.92 0 2.755 1.79 1 4 1" />
                 </svg>
@@ -77,17 +104,20 @@
             </a>
             {% endif %}
         </div>
-    </div>
+    </footer>
+
 </body>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-boundary-canvas/leaflet-boundary-canvas.js"></script>
 <script>
     const donors = JSON.parse('{{ donors_json|escapejs }}');
-    // console.log(donors)
     let manualMode = false;
     let selectedDonors = new Set();
     const manualSendBtn = document.getElementById("manualSendBtn");
+    const manualBtn = document.getElementById("manualBtn")
+    const autoBtn = document.getElementById("autoBtn");
+    const notificationDiv = document.getElementById("notification");
 
     const donorIcon = L.icon({
         iconUrl: "{% static 'icon.png' %}",
@@ -107,6 +137,16 @@
         console.log("Selected donors:", selectedDonors);
     }
 
+    if (autoBtn) {
+        autoBtn.addEventListener("click", () => {
+            manualMode = false;
+            selectedDonors.clear();
+
+            donors.forEach(donor => addDonor(donor.id));
+
+            notificationDiv.textContent = `${donors.length} donors have been auto-selected.`;
+        });
+    }
 
     fetch("{% static 'area.geojson' %}")
         .then(res => res.json())
@@ -149,6 +189,7 @@
                     this.setOpacity(0.5)
                 }
 
+                notificationDiv.textContent = `${selectedDonors.size} donors have been manually-selected.`;
                 console.log("Selected donors:", selectedDonors);
             })
 
@@ -163,7 +204,7 @@
     if (manualBtn) {
         manualBtn.addEventListener("click", () => {
             manualMode = true;
-            alert("Manual selection mode enabled. Right-click markers to select donors.");
+            notificationDiv.textContent = `Manual selection mode enabled.Right Click the Donor on the Map`;
         });
     }
 
@@ -198,7 +239,7 @@
                     return res.json();
                 })
                 .then(data => {
-                    alert(data.message || data.error);
+                    notificationDiv.textContent = `Request sent successfully`;
                     window.location.reload();
                 });
         });

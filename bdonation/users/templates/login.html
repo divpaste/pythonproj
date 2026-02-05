@@ -18,22 +18,23 @@
         {% endfor %}
         <br><br>
         {{form.password.label}}:
-        {{form.password}}
-
-        {% for error in form.password.errors %}
-        <p class="error">{{ error }}</p>
-        {% endfor %}
-
-        {% for error in form.non_field_errors %}
-        <p class="error">{{ error }}</p>
-        {% endfor %}
-
-        {% for message in messages %}
-        <p id="messages">{{message}}</p>
-        {% endfor %}
-
+        {{form.password}}<br><br>
         <br><br><input type="submit" value="Login"><br><br>
         <a href="{% url 'register' %}">Register now</a>
+
+        <div class="form-messages">
+            {% for field in form %}
+            {% for error in field.errors %}
+            <p class="error">{{ error }}</p>
+            {% endfor %}
+            {% endfor %}
+            {% for error in form.non_field_errors %}
+            <p class="error">{{ error }}</p>
+            {% endfor %}
+            {% for message in messages %}
+            <p class="message">{{ message }}</p>
+            {% endfor %}
+        </div>
     </form>
 </body>
 
