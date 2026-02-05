@@ -4,6 +4,6 @@ from .models import User, DonationRequest
 
 @admin.register(User)
 class CustomUserAdmin(UserAdmin):
-    list_display = ('username','bgroup')
+    list_display = ('username','bgroup', 'id')
 
 admin.site.register(DonationRequest)

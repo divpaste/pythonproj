@@ -32,6 +32,17 @@ class DonationRequest(models.Model):
         ("Rejected", "Rejected"),
     ]
 
+    bgroup_choices = [
+        ("A+", "A+"), ("A-", "A-"),
+        ("B+", "B+"), ("B-", "B-"),
+        ("AB+", "AB+"), ("AB-", "AB-"),
+        ("O+", "O+"), ("O-", "O-"),
+    ]
+
     receiver = models.ForeignKey(settings.AUTH_USER_MODEL,related_name="sent_requests",on_delete=models.CASCADE)
     donor = models.ForeignKey(settings.AUTH_USER_MODEL,related_name="received_requests",on_delete=models.CASCADE)
+
+    requested_bg = models.CharField(max_length=3,choices=bgroup_choices)
+    contact = models.CharField(max_length=10)
     status = models.CharField(max_length=10,choices=status_choices,default="Pending")
+    created_at = models.DateTimeField(auto_now_add=True)

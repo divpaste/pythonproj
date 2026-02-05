@@ -1,7 +1,7 @@
 from django import forms
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.contrib.auth.forms import UserCreationForm
-from .models import User
+from .models import User, DonationRequest
 from django.core.exceptions import ValidationError
 
 class RegistrationForm(UserCreationForm):
@@ -27,15 +27,14 @@ class BloodDonationForm(forms.ModelForm):
         model = User 
 
         fields = (
-        "full_name","age","bgroup","height","weight","med_history","previous_donor","contact","longitude","latitude"
+        "full_name","age","height","weight","med_history","previous_donor","contact","longitude","latitude"
         )
         widgets = {
             "full_name": forms.TextInput(attrs={"placeholder": "e.g John Doe",}),
             "age": forms.NumberInput(attrs={"placeholder": "e.g 25",}),
-            "bgroup": forms.Select(),
-            "height": forms.NumberInput(attrs={"placeholder": "cm"}),
-            "weight": forms.NumberInput(attrs={"placeholder": "kg"}),
-            "med_history": forms.Textarea(attrs={"style": "resize: none"}),
+            "height": forms.NumberInput(attrs={"placeholder": "in cm"}),
+            "weight": forms.NumberInput(attrs={"placeholder": "in kg"}),
+            "med_history": forms.Textarea(attrs={"placeholder": "(Optional)","style": "resize: none"}),
             "contact": forms.TextInput(attrs={"placeholder": "+91 98502 xxxxx"}),
             "previous_donor": forms.RadioSelect(choices=[(True, "Yes"), (False, "No")]),
             "longitude": forms.HiddenInput(),  
@@ -59,3 +58,16 @@ class BloodDonationForm(forms.ModelForm):
         if weight < 45 or weight > 150:
             raise ValidationError("Your Weight must lie between the limits")
         return weight
+    
+class DonationRequestForm(forms.ModelForm):
+    class Meta:
+        model = DonationRequest
+        fields = ("requested_bg", "contact")
+        labels = {
+            "requested_bg": "Request Blood Group",
+            "contact": "Your Contact Number",
+        }
+        widgets = {
+            "requested_bg": forms.Select(attrs={"class": "form-control"}),
+            "contact": forms.TextInput(attrs={"class": "form-control","placeholder": "e.g 98750 xxxxx"}),
+        }

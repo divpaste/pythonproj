@@ -1,12 +1,16 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpResponse
 from users.models import User, DonationRequest
+from users.forms import DonationRequestForm
 import json
 from django.contrib.auth.decorators import user_passes_test, login_required
+from django.views.decorators.http import require_POST
+from django.http import JsonResponse
 
 @login_required(login_url = 'login')
 def HomePage(request):
     user = request.user 
+    form = DonationRequestForm() if request.user.is_authenticated and request.user.role == "R" else None
 
     donors = User.objects.filter(role="D")
     donors_list = []
@@ -27,7 +31,7 @@ def HomePage(request):
 
     donors_json = json.dumps(donors_list)
 
-    return render(request, "homepage.html", {"donors_json": donors_json, "donors": donors, "has_filled": has_filled, "requests" : requests})
+    return render(request, "homepage.html", {"donors_json": donors_json, "donors": donors, "has_filled": has_filled, "requests" : requests, "form": form})
 
 @login_required(login_url = 'login')
 def InboxPage(request):
@@ -42,6 +46,17 @@ def InboxPage(request):
 
 @login_required(login_url = 'login')
 def send_request(request):
+    if request.method != "POST":
+        return redirect("homepage")
+
+    user = request.user
+    if user.role != "R":
+        return redirect("homepage")
+
+    form = DonationRequestForm(request.POST)
+    if not form.is_valid():
+        return redirect("homepage")
+    
     BLOOD_COMPATIBILITY = {
     'O+': ['O+', 'A+', 'B+', 'AB+'],
     'O-': ['O+', 'O-', 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-'],
@@ -53,17 +68,13 @@ def send_request(request):
     'AB-': ['AB+', 'AB-'],
     }
 
-    user = request.user
-
-    if user.role != "R":
-        return redirect("homepage")
-    
-    receiver_group = user.bgroup
+    requested_bg = request.user.bgroup
+    contact = form.cleaned_data["contact"]
 
     compatible_donor_groups = [
         donor_group
         for donor_group, receivers in BLOOD_COMPATIBILITY.items()
-        if receiver_group in receivers
+        if requested_bg in receivers
     ]
 
     compatible_donors = User.objects.filter(
@@ -74,7 +85,11 @@ def send_request(request):
     for donor in compatible_donors:
         DonationRequest.objects.get_or_create(
             donor=donor,
-            receiver=user
+            receiver=user,
+            defaults={
+                "requested_bg": requested_bg,
+                "contact": contact,
+            }
         )
 
     return redirect("homepage")
@@ -97,3 +112,30 @@ def reject_request(request, request_id):
 
     return redirect('inbox')
         
+@require_POST
+def send_manual_request(request):
+    if not request.user.is_authenticated or request.user.role != "R":
+        return JsonResponse({"error": "Unauthorized"}, status=403)
+    
+    try:
+        data = json.loads(request.body)
+        donor_ids = data.get("donor_ids", [])
+        requested_bg = request.user.bgroup
+        contact = data.get("contact")
+
+    except Exception:
+        return JsonResponse({"error": "Invalid data"}, status=400)
+    
+    donors = User.objects.filter(id__in=donor_ids, role="D")
+
+    for donor in donors:
+        DonationRequest.objects.get_or_create(
+            donor=donor,
+            receiver=request.user,
+            defaults={
+                "requested_bg": requested_bg,
+                "contact": contact
+            }
+        )
+
+    return JsonResponse({"message": "Requests sent successfully"})
