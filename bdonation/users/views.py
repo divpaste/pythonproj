@@ -18,12 +18,12 @@ def LoginPage(request):
             login(request, user)
             messages.success(request, f"User {user} successfully logged in")
             return redirect('homepage')
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
         
     return render(request, "login.html", {"form": form})
-
-def LogOut(request):
-    logout(request)
-    return redirect('login')
 
 def RegisterPage(request):
     form = RegistrationForm()
@@ -35,8 +35,16 @@ def RegisterPage(request):
             user = form.cleaned_data.get('username')
             messages.success(request, f"User {user} successfully created")
             return redirect("login")
+        else:
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
     
     return render(request, "register.html", {"form": form})
+
+def LogOut(request):
+    logout(request)
+    return redirect('login')
 
 @login_required(login_url = 'login')
 def DonatePage(request):
@@ -48,11 +56,11 @@ def DonatePage(request):
             donor = form.save(commit=False)
             donor.role = "D"
             donor.save()
-            messages.success(request, "Donation info saved! 🎉")
+            messages.success(request, "Your donor profile has been saved successfully!")
             return redirect('homepage')  
         else:
-            print("Error: ")
-            messages.error(request, "Donation not saved! 🎉")
-            print(form.errors)
+            for field, errors in form.errors.items():
+                for error in errors:
+                    messages.error(request, f"{field}: {error}")
 
     return render(request, "form.html", {"form": form, "API_KEY": settings.MAP_API_KEY})

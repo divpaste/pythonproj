@@ -6,6 +6,7 @@ import json
 from django.contrib.auth.decorators import user_passes_test, login_required
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
+from django.contrib import messages
 
 @login_required(login_url = 'login')
 def HomePage(request):
@@ -65,11 +66,19 @@ def send_request(request):
         return redirect("homepage")
 
     user = request.user
+
     if user.role != "R":
+        return redirect("homepage")
+    
+    existing_request = DonationRequest.objects.filter(receiver=user).exists()
+    if existing_request:
+        messages.warning(request, "You already have an active blood donation request.")
         return redirect("homepage")
 
     form = DonationRequestForm(request.POST)
     if not form.is_valid():
+        messages.error(request, "Invalid request data. Please check the form.")
+        print(form.errors)
         return redirect("homepage")
     
     BLOOD_COMPATIBILITY = {
@@ -97,6 +106,10 @@ def send_request(request):
         bgroup__in=compatible_donor_groups
     )
 
+    if not compatible_donors.exists():
+        messages.info(request, "No compatible donors available at the moment.")
+        return redirect("homepage")
+
     for donor in compatible_donors:
         DonationRequest.objects.get_or_create(
             donor=donor,
@@ -107,6 +120,7 @@ def send_request(request):
             }
         )
 
+    messages.success(request, "Blood donation request sent successfully!")
     return redirect("homepage")
 
 @login_required(login_url='login')
@@ -132,6 +146,10 @@ def send_manual_request(request):
     if not request.user.is_authenticated or request.user.role != "R":
         return JsonResponse({"error": "Unauthorized"}, status=403)
     
+    existing_request = DonationRequest.objects.filter(receiver=request.user).exists()
+    if existing_request:
+        return JsonResponse({"error": "You already have an active blood donation request."}, status=400)
+    
     try:
         data = json.loads(request.body)
         donor_ids = data.get("donor_ids", [])
@@ -141,10 +159,16 @@ def send_manual_request(request):
     except Exception:
         return JsonResponse({"error": "Invalid data"}, status=400)
     
+    if not donor_ids or not isinstance(donor_ids, list):
+        return JsonResponse({"error": "No donors selected"}, status=400)
+    
     donors = User.objects.filter(id__in=donor_ids, role="D")
+    if not donors.exists():
+        return JsonResponse({"error": "No valid donors found"}, status=400)
 
+    created_count = 0
     for donor in donors:
-        DonationRequest.objects.get_or_create(
+        obj, created = DonationRequest.objects.get_or_create(
             donor=donor,
             receiver=request.user,
             defaults={
@@ -152,8 +176,13 @@ def send_manual_request(request):
                 "contact": contact
             }
         )
+        if created:
+            created_count += 1
 
-    return JsonResponse({"message": "Requests sent successfully"})
+    if created_count == 0:
+        return JsonResponse({"error": "Requests already exist for selected donors"}, status=400)
+    
+    return JsonResponse({"message": f"{created_count} donation request(s) sent successfully."})
 
 @login_required(login_url='login')
 def ReceiverInboxPage(request):

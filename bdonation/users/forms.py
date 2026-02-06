@@ -30,7 +30,7 @@ class BloodDonationForm(forms.ModelForm):
         "full_name","age","height","weight","med_history","previous_donor","contact","longitude","latitude"
         )
         widgets = {
-            "full_name": forms.TextInput(attrs={"placeholder": "e.g John Doe",}),
+            "full_name": forms.TextInput(attrs={"placeholder": "e.g John Doe"}),
             "age": forms.NumberInput(attrs={"placeholder": "e.g 25",}),
             "height": forms.NumberInput(attrs={"placeholder": "in cm"}),
             "weight": forms.NumberInput(attrs={"placeholder": "in kg"}),
@@ -62,12 +62,10 @@ class BloodDonationForm(forms.ModelForm):
 class DonationRequestForm(forms.ModelForm):
     class Meta:
         model = DonationRequest
-        fields = ("requested_bg", "contact")
+        fields = ("contact",)
         labels = {
-            "requested_bg": "Request Blood Group",
             "contact": "Your Contact Number",
         }
         widgets = {
-            "requested_bg": forms.Select(attrs={"class": "form-control"}),
             "contact": forms.TextInput(attrs={"class": "form-control","placeholder": "e.g 98750 xxxxx"}),
         }

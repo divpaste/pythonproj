@@ -42,7 +42,8 @@
 
     <section class="user-info">
         {% if request.user.is_authenticated %}
-        You are a <strong>{{ request.user.get_role_display }}</strong> with Blood Group <strong>{{ request.user.bgroup }}</strong>
+        You are a <strong>{{ request.user.get_role_display }}</strong> with Blood Group
+        <strong>{{request.user.bgroup}}</strong>
         {% endif %}
     </section>
 
@@ -106,14 +107,38 @@
         </div>
     </footer>
 
+    <div class="popup" id="pop-up">
+        {% if messages %}
+        {% for message in messages %}
+        <span class="popup-message {{ message.tags }}">{{ message }}</span>
+        {% endfor %}
+        {% endif %}
+    </div>
+
 </body>
 
 <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="https://unpkg.com/leaflet-boundary-canvas/leaflet-boundary-canvas.js"></script>
 <script>
+    const popup = document.getElementById("pop-up");
+
+    if (popup && popup.textContent.trim() !== "") {
+        viewPopUp();
+    }
+
+    function viewPopUp() {
+        const popup = document.getElementById("pop-up");
+        popup.classList.add("show");
+
+        setTimeout(() => {
+            popup.classList.remove("show");
+        }, 3000);
+    }
+
     const donors = JSON.parse('{{ donors_json|escapejs }}');
     let manualMode = false;
     let selectedDonors = new Set();
+    const markersMap = {};
     const manualSendBtn = document.getElementById("manualSendBtn");
     const manualBtn = document.getElementById("manualBtn")
     const autoBtn = document.getElementById("autoBtn");
@@ -139,12 +164,11 @@
 
     if (autoBtn) {
         autoBtn.addEventListener("click", () => {
+            autoBtn.textContent = "Selected";
             manualMode = false;
             selectedDonors.clear();
 
-            donors.forEach(donor => addDonor(donor.id));
-
-            notificationDiv.textContent = `${donors.length} donors have been auto-selected.`;
+            notificationDiv.textContent = `${donors.length} donor/donors have been auto-selected.`;
         });
     }
 
@@ -189,22 +213,21 @@
                     this.setOpacity(0.5)
                 }
 
-                notificationDiv.textContent = `${selectedDonors.size} donors have been manually-selected.`;
-                console.log("Selected donors:", selectedDonors);
+                notificationDiv.textContent = `${selectedDonors.size} donor/donors have been manually-selected.`;
             })
 
         L.circle([lat, lng], {
             color: 'red',
             radius: 250
         }).addTo(map);
-
+        markersMap[donor.id] = marker;
 
     });
 
     if (manualBtn) {
         manualBtn.addEventListener("click", () => {
             manualMode = true;
-            notificationDiv.textContent = `Manual selection mode enabled.Right Click the Donor on the Map`;
+            notificationDiv.textContent = `Manual selection mode enabled. Right Click the Donor/Donors on the Map`;
         });
     }
 

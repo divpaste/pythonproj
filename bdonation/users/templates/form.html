@@ -40,7 +40,6 @@
         {{ form.longitude }}
         {{ form.latitude }}
 
-        <!-- <button type="button" onClick="getLoc()">Provide Location</button> -->
         <div id="map-container">
             <div id="map" style="height: 100%; width: 100%"></div>
             <div style="position:absolute; top:0px;z-index: 999">
@@ -48,11 +47,32 @@
             </div>
         </div>
 
+        <div class="popup" id="pop-up">
+            {% if messages %}
+            {% for message in messages %}
+            <span class="popup-message {{ message.tags }}">{{ message }}</span>
+            {% endfor %}
+            {% endif %}
+        </div>
+
         <button type="submit">Submit</button>
     </form>
     <script>
+        const popup = document.getElementById("pop-up");
+
+        if (popup && popup.textContent.trim() !== "") {
+            viewPopUp();
+        }
+
+        function viewPopUp() {
+            const popup = document.getElementById("pop-up");
+            popup.classList.add("show");
+
+            setTimeout(() => {
+                popup.classList.remove("show");
+            }, 3000);
+        }
         const API_KEY = "{{ API_KEY }}"
-        // const bounds = 0, bbox = 0
         const map = L.map('map', { minZoom: 11, maxZoom: 18, maxBoundsViscosity: 1.0 }).setView([18.95, 73.25], 11);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -100,7 +120,6 @@
         function removeMarker() {
             if (marked) {
                 map.removeLayer(marker)
-                // marker = null
                 marked = false
                 document.getElementById("remove-marker-btn").style.display = "none";
             }

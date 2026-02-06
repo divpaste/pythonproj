@@ -1,4 +1,5 @@
 {% load static %}
+{% load tz %}
 <!DOCTYPE html>
 <html>
 
@@ -28,14 +29,16 @@
                         <span class="blood-group">Blood Group: {{ req.donor.bgroup }}</span>
                     </div>
 
-                    <span class="status status-accepted">
+                    <span class="status status-{{ req.status|lower }}">
                         {{ req.status|capfirst }}
                     </span>
                 </div>
 
                 <div class="request-body">
+                    {% localtime on %}
                     <p><strong>Requested On:</strong> {{ req.created_at }}</p>
-
+                    {% endlocaltime %}
+                    
                     <p>
                         <strong>Contact:</strong>
                         <span class="contact-visible">{{ req.contact }}</span>

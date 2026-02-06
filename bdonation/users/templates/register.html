@@ -17,17 +17,9 @@
         {{form.username.label}}:
         {{form.username}}
 
-        {% for error in form.username.errors %}
-        <p class="error">{{ error }}</p>
-        {% endfor %}
-
         <br><br>
         {{form.password1.label}}:
         {{form.password1}}
-
-        {% for error in form.password1.errors %}
-        <p class="error">{{ error }}</p>
-        {% endfor %}
 
         <br><br>
         {{form.password2.label}}:
@@ -37,21 +29,33 @@
         {{ form.bgroup.label }}:
         {{ form.bgroup }}
 
-        {% for error in form.password2.errors %}
-        <p class="error">{{ error }}</p>
-        {% endfor %}
-
-        {% for error in form.non_field_errors %}
-        <p class="error">{{ error }}</p>
-        {% endfor %}
-
-        {% for message in messages %}
-        <p id="messages">{{message}}</p>
-        {% endfor %}
-
         <br><br><input type="submit" value="Register"><br><br>
         <a href="{% url 'login' %}">Login now</a>
+
+        <div class="popup" id="pop-up">
+            {% if messages %}
+            {% for message in messages %}
+            <span class="popup-message {{ message.tags }}">{{ message }}</span>
+            {% endfor %}
+            {% endif %}
+        </div>
+
     </form>
 </body>
+<script>
+    const popup = document.getElementById("pop-up");
+    if (popup && popup.textContent.trim() !== "") {
+        viewPopUp();
+    }
+
+    function viewPopUp() {
+        const popup = document.getElementById("pop-up");
+        popup.classList.add("show");
+
+        setTimeout(() => {
+            popup.classList.remove("show");
+        }, 3000);
+    }
+</script>
 
 </html>
