@@ -135,4 +135,4 @@ AUTH_USER_MODEL = "users.User"
 LOGIN_URL = "login"
 
 # load_dotenv()
-MAP_API_KEY = "hL6PkdiCy6ze9RuEDbVZ"
+MAP_API_KEY = os.environ.get('MAP_API_KEY')
