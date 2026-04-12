@@ -1,0 +1,57 @@
+{% load static %}
+<!DOCTYPE html>
+
+<head>
+
+    <head>
+        <link rel="stylesheet" href="{% static 'style.css' %}">
+    </head>
+</head>
+<html>
+
+<body>
+    <form method="POST">
+        <h1>Register Page</h1>
+        {% csrf_token %}
+
+        {{form.username.label}}:
+        {{form.username}}
+
+        {% for error in form.username.errors %}
+        <p class="error">{{ error }}</p>
+        {% endfor %}
+
+        <br><br>
+        {{form.password1.label}}:
+        {{form.password1}}
+
+        {% for error in form.password1.errors %}
+        <p class="error">{{ error }}</p>
+        {% endfor %}
+
+        <br><br>
+        {{form.password2.label}}:
+        {{form.password2}}
+
+        <br><br>
+        {{ form.bgroup.label }}:
+        {{ form.bgroup }}
+
+        {% for error in form.password2.errors %}
+        <p class="error">{{ error }}</p>
+        {% endfor %}
+
+        {% for error in form.non_field_errors %}
+        <p class="error">{{ error }}</p>
+        {% endfor %}
+
+        {% for message in messages %}
+        <p id="messages">{{message}}</p>
+        {% endfor %}
+
+        <br><br><input type="submit" value="Register"><br><br>
+        <a href="{% url 'login' %}">Login now</a>
+    </form>
+</body>
+
+</html>

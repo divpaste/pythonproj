@@ -1,0 +1,192 @@
+{% load static %}
+<!DOCTYPE html>
+
+<head>
+</head>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+<link rel="stylesheet" href="{% static 'requests.css' %}">
+
+<body>
+    <div id="list">
+        <button type="button" class="btns">All</button>
+        <button type="button" class="btns">Pending</button>
+        <button type="button" class="btns">Accepted</button>
+        <button type="button" class="btns">Requests</button>
+    </div>
+    <div id="info-container">
+        <div id="info">
+        </div>
+    </div>
+</body>
+
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-boundary-canvas/leaflet-boundary-canvas.js"></script>
+<script>
+    let activeButton = null
+    let activeDetails = null
+    const maps = {}
+
+    const donors = JSON.parse('{{ donors_json|escapejs }}')
+    const info = document.getElementById("info")
+    console.log(donors)
+
+    donors.forEach(donor => {
+        const request = document.createElement("div")
+        request.id = "requests"
+
+        const titlestatus = document.createElement("div")
+        titlestatus.id = "titlestatus"
+        const name = document.createElement("h2")
+        name.textContent = donor.name
+        const status = document.createElement("p")
+        status.className = "status"
+        status.id = "pending"
+        status.textContent = "PENDING"
+
+        titlestatus.append(name)
+        titlestatus.append(status)
+        request.append(titlestatus)
+
+        const smallinfo = document.createElement("div")
+        smallinfo.id = "smallinfo"
+        const bgroup = document.createElement("p")
+        bgroup.textContent = donor.bgroup
+        const age = document.createElement("p")
+        age.textContent = donor.age
+        const contact = document.createElement("p")
+        contact.textContent = donor.contact
+
+        smallinfo.append(bgroup)
+        smallinfo.append(age)
+        smallinfo.append(contact)
+        request.append(smallinfo)
+
+        const buttons = document.createElement("div")
+        buttons.id = "buttons"
+        const detailsbtn = document.createElement("button")
+        detailsbtn.className = "detailsbtn"
+        detailsbtn.textContent = "View Details"
+        const acceptbtn = document.createElement("button")
+        acceptbtn.id = "acceptbtn"
+        acceptbtn.textContent = "Accept"
+        const rejectbtn = document.createElement("button")
+        rejectbtn.id = "rejectbtn"
+        rejectbtn.textContent = "Reject"
+
+        buttons.append(detailsbtn)
+        buttons.append(acceptbtn)
+        buttons.append(rejectbtn)
+        request.append(buttons)
+
+        const detailsContainer = document.createElement("div")
+        detailsContainer.className = "details-container hidden"
+        const details = document.createElement("div")
+        details.id = "details"
+        const personalInfo = document.createElement("div")
+        personalInfo.id = "personalinfo"
+        const personalTitle = document.createElement("h3")
+        personalTitle.textContent = "Personal Information"
+
+        const heightWeight = document.createElement("div")
+        heightWeight.id = "heightweight"
+        const heightDiv = document.createElement("div")
+        heightDiv.id = "height"
+        const heightTitle = document.createElement("h3")
+        heightTitle.textContent = "Height"
+        const height = document.createElement("p")
+        height.textContent = donor.height
+        heightDiv.append(heightTitle, height)
+
+        const weightDiv = document.createElement("div")
+        weightDiv.id = "weight"
+        const weightTitle = document.createElement("h3")
+        weightTitle.textContent = "Weight"
+        const weight = document.createElement("p")
+        weight.textContent = donor.weight
+        weightDiv.append(weightTitle, weight)
+
+        heightWeight.append(heightDiv, weightDiv)
+
+        const prevDonor = document.createElement("div")
+        prevDonor.id = "prevdonor"
+        const prevTitle = document.createElement("h3")
+        prevTitle.textContent = "Previous Donor"
+        const prev = document.createElement("p")
+        prev.textContent = donor.previous_donor ? "Yes" : "No"
+        prevDonor.append(prevTitle, prev)
+
+        const medDiv = document.createElement("div")
+        const medTitle = document.createElement("h3")
+        medTitle.textContent = "Medical History"
+        const textarea = document.createElement("textarea")
+        textarea.id = "medhist"
+        textarea.readOnly = true
+        medDiv.append(medTitle, textarea)
+
+        personalInfo.append(personalTitle, heightWeight, prevDonor, medDiv)
+
+        const location = document.createElement("div")
+        location.id = "location"
+        const locTitle = document.createElement("h3")
+        locTitle.textContent = "Location"
+        const mapDiv = document.createElement("div")
+        mapDiv.id = `map-${donor.id}`
+
+        location.append(locTitle, mapDiv)
+
+        details.append(personalInfo, location)
+        detailsContainer.append(details)
+        request.append(detailsContainer)
+        info.append(request)
+
+        detailsbtn.onclick = function () {
+            if (activeButton === detailsbtn) {
+                detailsContainer.classList.add("hidden")
+                activeButton = null
+                activeDetails = null
+                return
+            }
+
+            if (activeDetails) {
+                activeDetails.classList.add("hidden")
+            }
+
+            detailsContainer.classList.remove("hidden")
+            activeButton = detailsbtn
+            activeDetails = detailsContainer
+
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    if (!maps[donor.id]) {
+                        maps[donor.id] = createMap(donor, `map-${donor.id}`)
+                    }
+                    maps[donor.id].invalidateSize()
+                })
+            })
+        }
+    })
+
+    function createMap(donor, mapId) {
+        const mapDiv = document.getElementById(mapId)
+        mapDiv.innerHTML = ""
+
+        const map = L.map(mapId, {
+            minZoom: 11,
+            maxZoom: 18
+        }).setView([donor.latitude, donor.longitude], 13)
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy OpenStreetMap contributors'
+        }).addTo(map)
+
+        L.marker([donor.latitude, donor.longitude]).addTo(map)
+
+        const bounds = L.latLngBounds([18.916219, 72.702044], [19.328002, 73.320066])
+        map.setMaxBounds(bounds)
+
+        return map
+    }
+</script>
+
+</html>
